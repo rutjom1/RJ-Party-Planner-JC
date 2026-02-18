@@ -54,7 +54,11 @@ export function LoginForm() {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       router.push('/dashboard');
     } catch (e: any) {
-      setError(e.message);
+      if (['auth/user-not-found', 'auth/wrong-password', 'auth/invalid-credential'].includes(e.code)) {
+        setError("Invalid email or password. Please try again.");
+      } else {
+        setError(e.message);
+      }
     } finally {
       setIsSubmitting(false);
     }
