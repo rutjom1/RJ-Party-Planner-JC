@@ -11,7 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile, type User } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useAuth, useFirestore } from '@/firebase';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -57,12 +57,17 @@ export function RegisterForm() {
         return;
     }
 
+    let user: User | null = null;
+
     try {
+      // 1. Create user in Auth
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      const user = userCredential.user;
+      user = userCredential.user;
       
+      // 2. Update Auth display name
       await updateProfile(user, { displayName: values.name });
 
+      // 3. Create user profile document in Firestore
       const userProfileData = {
         name: values.name,
         email: values.email,
@@ -70,23 +75,34 @@ export function RegisterForm() {
       };
       
       const userDocRef = doc(firestore, "users", user.uid);
-      
-      setDoc(userDocRef, userProfileData, { merge: true })
-        .then(() => {
-          router.push('/dashboard');
-        })
-        .catch(serverError => {
+      await setDoc(userDocRef, userProfileData);
+
+      // 4. Redirect to dashboard on complete success
+      router.push('/dashboard');
+
+    } catch (e: any) {
+        let errorMessage = e.message;
+        
+        if (e.code === 'auth/email-already-in-use') {
+          errorMessage = 'This email address is already in use. Please try another one.';
+        } 
+        else if (e.name === 'FirebaseError' && e.code === 'permission-denied' && user) {
+            // Firestore permission error after user was created.
+            const userProfileData = {
+                name: values.name,
+                email: values.email,
+                avatarUrl: user.photoURL || null
+            };
             const permissionError = new FirestorePermissionError({
                 path: `users/${user.uid}`,
                 operation: 'create',
                 requestResourceData: userProfileData,
             });
             errorEmitter.emit('permission-error', permissionError);
-            setError(permissionError.message);
-            setIsSubmitting(false);
-        });
-    } catch (e: any) {
-        setError(e.message);
+            errorMessage = permissionError.message; // Use the more detailed message
+        }
+        
+        setError(errorMessage);
         setIsSubmitting(false);
     }
   };
