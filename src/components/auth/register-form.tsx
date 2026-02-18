@@ -60,39 +60,34 @@ export function RegisterForm() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
+      
       await updateProfile(user, { displayName: values.name });
 
-      // Create user profile in Firestore
-      const userDocRef = doc(firestore, "users", user.uid);
       const userProfileData = {
         name: values.name,
         email: values.email,
         avatarUrl: user.photoURL || null
       };
-
-      await setDoc(userDocRef, userProfileData, { merge: true });
       
-      router.push('/dashboard');
-    } catch (e: any) {
-      const user = auth.currentUser;
-      if (e.code === 'permission-denied' && user) {
-         const userProfileData = {
-          name: values.name,
-          email: values.email,
-          avatarUrl: user.photoURL || null
-        };
-        const permissionError = new FirestorePermissionError({
-            path: `users/${user.uid}`,
-            operation: 'create',
-            requestResourceData: userProfileData,
+      const userDocRef = doc(firestore, "users", user.uid);
+      
+      setDoc(userDocRef, userProfileData, { merge: true })
+        .then(() => {
+          router.push('/dashboard');
+        })
+        .catch(serverError => {
+            const permissionError = new FirestorePermissionError({
+                path: `users/${user.uid}`,
+                operation: 'create',
+                requestResourceData: userProfileData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+            setError(permissionError.message);
+            setIsSubmitting(false);
         });
-        errorEmitter.emit('permission-error', permissionError);
-        setError(permissionError.message);
-      } else {
+    } catch (e: any) {
         setError(e.message);
-      }
-    } finally {
-      setIsSubmitting(false);
+        setIsSubmitting(false);
     }
   };
 
