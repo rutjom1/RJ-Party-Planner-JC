@@ -1,16 +1,22 @@
 "use client";
 
-import { useFormState, useFormStatus } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { createEvent } from '@/lib/actions/events';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Loader2, CalendarPlus } from 'lucide-react';
+import { useState } from 'react';
+import { useFirestore, useUser } from '@/firebase';
+import { addDoc, collection } from 'firebase/firestore';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const eventSchema = z.object({
   name: z.string().min(3, 'Event name must be at least 3 characters.'),
@@ -21,39 +27,87 @@ const eventSchema = z.object({
   theme: z.string().optional(),
 });
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
+function SubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
   return (
-    <Button type="submit" className="w-full" disabled={pending} size="lg">
-      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CalendarPlus className="mr-2 h-4 w-4" />}
+    <Button type="submit" className="w-full" disabled={isSubmitting} size="lg">
+      {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CalendarPlus className="mr-2 h-4 w-4" />}
       Create Event
     </Button>
   );
 }
 
 export function EventForm() {
-  const [state, formAction] = useFormState(createEvent, null);
+    const [error, setError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const router = useRouter();
+    const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof eventSchema>>({
-    resolver: zodResolver(eventSchema),
-    defaultValues: {
-      name: '',
-      date: '',
-      time: '',
-      location: '',
-      description: '',
-      theme: '',
-    },
-  });
+    const form = useForm<z.infer<typeof eventSchema>>({
+        resolver: zodResolver(eventSchema),
+        defaultValues: {
+            name: '',
+            date: '',
+            time: '',
+            location: '',
+            description: '',
+            theme: '',
+        },
+    });
+
+    const onSubmit = async (values: z.infer<typeof eventSchema>) => {
+        setIsSubmitting(true);
+        setError(null);
+        if (!firestore || !user) {
+            setError("You must be logged in to create an event.");
+            setIsSubmitting(false);
+            return;
+        }
+
+        try {
+            const randomImage = PlaceHolderImages[Math.floor(Math.random() * (PlaceHolderImages.length - 5))];
+
+            const newEvent = {
+                ...values,
+                userId: user.uid,
+                imageUrl: randomImage.imageUrl,
+                imageHint: randomImage.imageHint,
+            };
+            
+            const eventCollection = collection(firestore, 'events');
+            addDoc(eventCollection, newEvent)
+              .then(() => {
+                toast({
+                    title: "Event Created!",
+                    description: `${values.name} has been successfully created.`,
+                });
+                router.push('/dashboard');
+              })
+              .catch(serverError => {
+                const permissionError = new FirestorePermissionError({
+                  path: eventCollection.path,
+                  operation: 'create',
+                  requestResourceData: newEvent
+                });
+                errorEmitter.emit('permission-error', permissionError);
+                setError(permissionError.message);
+                setIsSubmitting(false);
+              });
+        } catch (e: any) {
+            setError(e.message);
+            setIsSubmitting(false);
+        }
+    };
 
   return (
     <Form {...form}>
-      <form action={formAction} className="space-y-4">
-        {state?.error && (
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {error && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error Creating Event</AlertTitle>
-            <AlertDescription>{state.error}</AlertDescription>
+            <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
         <FormField
@@ -136,7 +190,7 @@ export function EventForm() {
             </FormItem>
           )}
         />
-        <SubmitButton />
+        <SubmitButton isSubmitting={isSubmitting} />
       </form>
     </Form>
   );

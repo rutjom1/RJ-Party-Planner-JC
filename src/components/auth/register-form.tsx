@@ -1,16 +1,19 @@
 "use client";
 
-import { useFormState, useFormStatus } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { signup } from '@/lib/actions/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { useAuth, useFirestore } from '@/firebase';
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -18,18 +21,21 @@ const signupSchema = z.object({
   password: z.string().min(8, 'Password must be at least 8 characters.'),
 });
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
+function SubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
   return (
-    <Button type="submit" className="w-full" disabled={pending}>
-      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+    <Button type="submit" className="w-full" disabled={isSubmitting}>
+      {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
       Create Account
     </Button>
   );
 }
 
 export function RegisterForm() {
-  const [state, formAction] = useFormState(signup, null);
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const auth = useAuth();
+  const firestore = useFirestore();
 
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
@@ -40,14 +46,43 @@ export function RegisterForm() {
     },
   });
 
+  const onSubmit = async (values: z.infer<typeof signupSchema>) => {
+    setIsSubmitting(true);
+    setError(null);
+    if (!auth || !firestore) {
+        setError("Auth/Firestore service not available.");
+        setIsSubmitting(false);
+        return;
+    }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      const user = userCredential.user;
+      await updateProfile(user, { displayName: values.name });
+
+      // Create user profile in Firestore
+      await setDoc(doc(firestore, "users", user.uid), {
+        name: values.name,
+        email: values.email,
+        avatarUrl: user.photoURL
+      });
+
+      router.push('/dashboard');
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <Form {...form}>
-      <form action={formAction} className="space-y-4">
-        {state?.error && (
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {error && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{state.error}</AlertDescription>
+            <AlertTitle>Registration Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
         <FormField
@@ -89,7 +124,7 @@ export function RegisterForm() {
             </FormItem>
           )}
         />
-        <SubmitButton />
+        <SubmitButton isSubmitting={isSubmitting} />
       </form>
     </Form>
   );

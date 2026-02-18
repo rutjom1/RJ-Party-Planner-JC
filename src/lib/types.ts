@@ -1,8 +1,23 @@
 export type User = {
   id: string;
+  uid: string;
   name: string;
   email: string;
   avatarUrl?: string;
+};
+
+export type PartyEvent = {
+  id: string;
+  name: string;
+  date: string;
+  time: string;
+  location: string;
+  description: string;
+  theme?: string;
+  userId: string;
+  imageUrl: string;
+  imageHint: string;
+  [key: string]: any;
 };
 
 export type Guest = {

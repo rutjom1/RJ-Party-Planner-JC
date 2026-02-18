@@ -1,12 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
-import type { Event } from "@/lib/types";
+import type { PartyEvent } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Calendar } from "lucide-react";
 
 type EventCardProps = {
-  event: Event;
+  event: PartyEvent;
 };
 
 export function EventCard({ event }: EventCardProps) {
@@ -16,9 +16,9 @@ export function EventCard({ event }: EventCardProps) {
     <Card className="flex flex-col">
       <CardHeader className="p-0">
         <Image
-          src={event.image.url}
-          alt={event.image.alt}
-          data-ai-hint={event.image.hint}
+          src={event.imageUrl}
+          alt={event.name}
+          data-ai-hint={event.imageHint}
           width={400}
           height={300}
           className="rounded-t-lg object-cover aspect-[4/3]"

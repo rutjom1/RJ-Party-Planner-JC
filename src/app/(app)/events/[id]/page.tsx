@@ -1,10 +1,23 @@
-import { MOCK_EVENTS } from "@/lib/placeholder-data";
+'use client';
+import { useDoc, useFirestore } from "@/firebase";
 import { notFound } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Calendar, Clock, MapPin } from "lucide-react";
+import { Calendar, Clock, MapPin, Loader2 } from "lucide-react";
+import { doc } from "firebase/firestore";
+import { PartyEvent } from "@/lib/types";
 
 export default function EventDetailPage({ params }: { params: { id: string } }) {
-  const event = MOCK_EVENTS.find(e => e.id === params.id);
+  const firestore = useFirestore();
+  const eventRef = firestore ? doc(firestore, "events", params.id) : null;
+  const { data: event, loading } = useDoc<PartyEvent>(eventRef);
+
+  if (loading) {
+      return (
+        <div className="flex justify-center items-center h-full">
+            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        </div>
+      );
+  }
 
   if (!event) {
     notFound();
