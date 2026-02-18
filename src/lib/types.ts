@@ -1,9 +1,8 @@
-export type User = {
-  id: string;
-  uid: string;
-  name: string;
-  email: string;
-  avatarUrl?: string;
+export type UserProfile = {
+  name: string | null;
+  email: string | null;
+  avatarUrl?: string | null;
+  [key: string]: any;
 };
 
 export type PartyEvent = {
@@ -37,27 +36,7 @@ export type Task = {
 
 export type Message = {
   id:string;
-  user: Pick<User, 'id' | 'name' | 'avatarUrl'>;
+  user: Pick<UserProfile & {id: string}, 'id' | 'name' | 'avatarUrl'>;
   text: string;
   timestamp: number;
-};
-
-export type Event = {
-  id: string;
-  name: string;
-  date: string;
-  time: string;
-  location: string;
-  description: string;
-  theme: string;
-  host: User;
-  guests: Guest[];
-  tasks: Task[];
-  chat: Message[];
-  image: {
-    id: string;
-    url: string;
-    alt: string;
-    hint: string;
-  }
 };

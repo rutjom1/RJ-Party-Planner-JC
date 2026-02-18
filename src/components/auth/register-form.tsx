@@ -14,6 +14,8 @@ import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useAuth, useFirestore } from '@/firebase';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -61,12 +63,23 @@ export function RegisterForm() {
       await updateProfile(user, { displayName: values.name });
 
       // Create user profile in Firestore
-      await setDoc(doc(firestore, "users", user.uid), {
+      const userDocRef = doc(firestore, "users", user.uid);
+      const userProfileData = {
         name: values.name,
         email: values.email,
-        avatarUrl: user.photoURL
-      });
+        avatarUrl: user.photoURL || null
+      };
 
+      setDoc(userDocRef, userProfileData, { merge: true }).catch(serverError => {
+        const permissionError = new FirestorePermissionError({
+            path: userDocRef.path,
+            operation: 'create',
+            requestResourceData: userProfileData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        setError(permissionError.message);
+      });
+      
       router.push('/dashboard');
     } catch (e: any) {
       setError(e.message);
