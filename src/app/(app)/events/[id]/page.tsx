@@ -11,10 +11,11 @@ import Link from "next/link";
 
 export default function EventDetailPage({ params }: { params: { id: string } }) {
   const firestore = useFirestore();
+  const { id } = params;
   const eventRef = useMemo(() => {
     if (!firestore) return null;
-    return doc(firestore, "events", params.id);
-  }, [firestore, params.id]);
+    return doc(firestore, "events", id);
+  }, [firestore, id]);
   const { data: project, loading } = useDoc<Project>(eventRef);
 
   if (loading) {
