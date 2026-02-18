@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Loader2, CalendarPlus } from 'lucide-react';
 import { useState } from 'react';
-import { useFirestore, useUser } from '@/firebase';
+import { useFirestore } from '@/firebase';
 import { addDoc, collection } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -40,7 +40,6 @@ export function EventForm() {
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const firestore = useFirestore();
-    const { user } = useUser();
     const router = useRouter();
     const { toast } = useToast();
 
@@ -59,8 +58,8 @@ export function EventForm() {
     const onSubmit = async (values: z.infer<typeof eventSchema>) => {
         setIsSubmitting(true);
         setError(null);
-        if (!firestore || !user) {
-            setError("You must be logged in to create an event.");
+        if (!firestore) {
+            setError("Database connection not available.");
             setIsSubmitting(false);
             return;
         }
@@ -70,19 +69,18 @@ export function EventForm() {
 
             const newEvent = {
                 ...values,
-                userId: user.uid,
                 imageUrl: randomImage.imageUrl,
                 imageHint: randomImage.imageHint,
             };
             
             const eventCollection = collection(firestore, 'events');
             addDoc(eventCollection, newEvent)
-              .then(() => {
+              .then((docRef) => {
                 toast({
                     title: "Event Created!",
                     description: `${values.name} has been successfully created.`,
                 });
-                router.push('/dashboard');
+                router.push(`/events/${docRef.id}`);
               })
               .catch(serverError => {
                 const permissionError = new FirestorePermissionError({

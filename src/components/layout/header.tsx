@@ -1,5 +1,4 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { UserNav } from "./user-nav";
 
 export function Header() {
   return (
@@ -11,7 +10,6 @@ export function Header() {
         <div className="ml-auto flex-1 sm:flex-initial">
           {/* Future search bar can go here */}
         </div>
-        <UserNav />
       </div>
     </header>
   );

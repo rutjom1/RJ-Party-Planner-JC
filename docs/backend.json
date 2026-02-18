@@ -1,30 +1,5 @@
 {
     "entities": {
-        "UserProfile": {
-            "title": "User Profile",
-            "description": "Represents a user's public profile information.",
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "description": "The user's display name."
-                },
-                "email": {
-                    "type": "string",
-                    "format": "email",
-                    "description": "The user's email address."
-                },
-                "avatarUrl": {
-                    "type": "string",
-                    "format": "uri",
-                    "description": "URL of the user's avatar image."
-                }
-            },
-            "required": [
-                "name",
-                "email"
-            ]
-        },
         "PartyEvent": {
             "title": "Party Event",
             "description": "Represents a party or event planned by a user.",
@@ -48,10 +23,6 @@
                 "theme": {
                     "type": "string"
                 },
-                "userId": {
-                    "type": "string",
-                    "description": "The ID of the user who created the event."
-                },
                 "imageUrl": {
                     "type": "string",
                     "format": "uri"
@@ -66,24 +37,15 @@
                 "time",
                 "location",
                 "description",
-                "userId",
                 "imageUrl",
                 "imageHint"
             ]
         }
     },
     "auth": {
-        "providers": [
-            "email"
-        ]
+        "providers": []
     },
     "firestore": {
-        "/users/{userId}": {
-            "schema": {
-                "$ref": "#/entities/UserProfile"
-            },
-            "description": "Stores user profile information."
-        },
         "/events/{eventId}": {
             "schema": {
                 "$ref": "#/entities/PartyEvent"

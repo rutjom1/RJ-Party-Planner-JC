@@ -1,10 +1,3 @@
-export type UserProfile = {
-  name: string | null;
-  email: string | null;
-  avatarUrl?: string | null;
-  [key: string]: any;
-};
-
 export type PartyEvent = {
   id: string;
   name: string;
@@ -13,7 +6,6 @@ export type PartyEvent = {
   location: string;
   description: string;
   theme?: string;
-  userId: string;
   imageUrl: string;
   imageHint: string;
   [key: string]: any;
@@ -36,7 +28,11 @@ export type Task = {
 
 export type Message = {
   id:string;
-  user: Pick<UserProfile & {id: string}, 'id' | 'name' | 'avatarUrl'>;
+  user: {
+      id: string;
+      name: string | null;
+      avatarUrl?: string | null;
+  };
   text: string;
   timestamp: number;
 };

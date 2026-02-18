@@ -15,11 +15,8 @@ export default function Home() {
           <span className="sr-only">RJ Party Planner JC</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Button asChild variant="ghost">
-            <Link href="/login">Login</Link>
-          </Button>
           <Button asChild>
-            <Link href="/register">Get Started</Link>
+            <Link href="/dashboard">Get Started</Link>
           </Button>
         </nav>
       </header>
@@ -39,7 +36,7 @@ export default function Home() {
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                    <Button asChild size="lg">
-                    <Link href="/register">
+                    <Link href="/dashboard">
                       Start Planning for Free
                     </Link>
                   </Button>

@@ -1,6 +1,6 @@
 'use client';
-import { useFirestore, useUser, useCollection } from "@/firebase";
-import { collection, query, where } from "firebase/firestore";
+import { useFirestore, useCollection } from "@/firebase";
+import { collection, query } from "firebase/firestore";
 import { EventCard } from "@/components/events/event-card";
 import { PartyEvent } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -21,9 +21,8 @@ function EventSkeleton() {
 
 export default function DashboardPage() {
     const firestore = useFirestore();
-    const { user } = useUser();
     
-    const eventsQuery = user && firestore ? query(collection(firestore, "events"), where("userId", "==", user.uid)) : null;
+    const eventsQuery = firestore ? query(collection(firestore, "events")) : null;
     const { data: events, loading } = useCollection<PartyEvent>(eventsQuery);
 
   return (
