@@ -58,22 +58,21 @@ export function EventForm() {
     const onSubmit = async (values: z.infer<typeof eventSchema>) => {
         setIsSubmitting(true);
         setError(null);
+        
         if (!firestore) {
             setError("Database connection not available.");
             setIsSubmitting(false);
             return;
         }
 
-        try {
-            // The first 4 images in the placeholder list are suitable for events.
-            const randomImage = PlaceHolderImages[Math.floor(Math.random() * 4)];
+        const randomImage = PlaceHolderImages[Math.floor(Math.random() * 4)];
+        const newEvent = {
+            ...values,
+            imageUrl: randomImage.imageUrl,
+            imageHint: randomImage.imageHint,
+        };
 
-            const newEvent = {
-                ...values,
-                imageUrl: randomImage.imageUrl,
-                imageHint: randomImage.imageHint,
-            };
-            
+        try {
             const eventCollection = collection(firestore, 'events');
             const docRef = await addDoc(eventCollection, newEvent);
             
@@ -82,15 +81,15 @@ export function EventForm() {
                 description: `${values.name} has been successfully created.`,
             });
             router.push(`/events/${docRef.id}`);
-
         } catch (e: any) {
             const permissionError = new FirestorePermissionError({
               path: 'events',
               operation: 'create',
-              requestResourceData: values,
+              requestResourceData: newEvent,
             });
             errorEmitter.emit('permission-error', permissionError);
             setError("There was an error creating your event. Please try again.");
+        } finally {
             setIsSubmitting(false);
         }
     };
