@@ -62,7 +62,7 @@ export function LoginForm() {
           setError("Invalid email or password. Please try again.");
           break;
         default:
-          setError("An unexpected error occurred. Please try again later.");
+          setError(e.message || "An unexpected error occurred. Please try again later.");
           console.error("Login Error:", e);
           break;
       }
