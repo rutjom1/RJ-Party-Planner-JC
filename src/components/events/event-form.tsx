@@ -65,7 +65,8 @@ export function EventForm() {
         }
 
         try {
-            const randomImage = PlaceHolderImages[Math.floor(Math.random() * (PlaceHolderImages.length - 5))];
+            // The first 4 images in the placeholder list are suitable for events.
+            const randomImage = PlaceHolderImages[Math.floor(Math.random() * 4)];
 
             const newEvent = {
                 ...values,
@@ -74,26 +75,22 @@ export function EventForm() {
             };
             
             const eventCollection = collection(firestore, 'events');
-            addDoc(eventCollection, newEvent)
-              .then((docRef) => {
-                toast({
-                    title: "Event Created!",
-                    description: `${values.name} has been successfully created.`,
-                });
-                router.push(`/events/${docRef.id}`);
-              })
-              .catch(serverError => {
-                const permissionError = new FirestorePermissionError({
-                  path: eventCollection.path,
-                  operation: 'create',
-                  requestResourceData: newEvent
-                });
-                errorEmitter.emit('permission-error', permissionError);
-                setError(permissionError.message);
-                setIsSubmitting(false);
-              });
+            const docRef = await addDoc(eventCollection, newEvent);
+            
+            toast({
+                title: "Event Created!",
+                description: `${values.name} has been successfully created.`,
+            });
+            router.push(`/events/${docRef.id}`);
+
         } catch (e: any) {
-            setError(e.message);
+            const permissionError = new FirestorePermissionError({
+              path: 'events',
+              operation: 'create',
+              requestResourceData: values,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+            setError("There was an error creating your event. Please try again.");
             setIsSubmitting(false);
         }
     };
