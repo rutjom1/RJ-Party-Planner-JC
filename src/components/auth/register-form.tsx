@@ -70,19 +70,27 @@ export function RegisterForm() {
         avatarUrl: user.photoURL || null
       };
 
-      setDoc(userDocRef, userProfileData, { merge: true }).catch(serverError => {
+      await setDoc(userDocRef, userProfileData, { merge: true });
+      
+      router.push('/dashboard');
+    } catch (e: any) {
+      const user = auth.currentUser;
+      if (e.code === 'permission-denied' && user) {
+         const userProfileData = {
+          name: values.name,
+          email: values.email,
+          avatarUrl: user.photoURL || null
+        };
         const permissionError = new FirestorePermissionError({
-            path: userDocRef.path,
+            path: `users/${user.uid}`,
             operation: 'create',
             requestResourceData: userProfileData,
         });
         errorEmitter.emit('permission-error', permissionError);
         setError(permissionError.message);
-      });
-      
-      router.push('/dashboard');
-    } catch (e: any) {
-      setError(e.message);
+      } else {
+        setError(e.message);
+      }
     } finally {
       setIsSubmitting(false);
     }
