@@ -5,10 +5,10 @@ import { suggestPartyThemes } from '@/ai/flows/suggest-party-themes';
 import { draftInvitationWording } from '@/ai/flows/draft-invitation-wording';
 import { recommendPartyGames } from '@/ai/flows/recommend-party-games';
 
-// Theme Suggester
+// Project Idea Suggester
 const themeSchema = z.object({
-  purpose: z.string().min(3, "Purpose must be at least 3 characters long."),
-  ambiance: z.string().min(3, "Ambiance must be at least 3 characters long."),
+  projectType: z.string().min(3, "Project type must be at least 3 characters long."),
+  projectField: z.string().min(3, "Field/Industry must be at least 3 characters long."),
 });
 
 type ThemeState = {
@@ -17,32 +17,33 @@ type ThemeState = {
 }
 
 export async function getThemeSuggestions(prevState: ThemeState, formData: FormData): Promise<ThemeState> {
-  const validatedFields = themeSchema.safeParse(Object.fromEntries(formData.entries()));
+  const validatedFields = themeSchema.safeParse({
+    projectType: formData.get('projectType'),
+    projectField: formData.get('projectField'),
+  });
 
   if (!validatedFields.success) {
     return {
-      error: validatedFields.error.flatten().fieldErrors.purpose?.[0] || validatedFields.error.flatten().fieldErrors.ambiance?.[0],
+      error: validatedFields.error.flatten().fieldErrors.projectType?.[0] || validatedFields.error.flatten().fieldErrors.projectField?.[0],
     };
   }
 
   try {
-    const result = await suggestPartyThemes(validatedFields.data);
+    // Note: AI flow is still for party themes, but we're passing project-related data.
+    const result = await suggestPartyThemes({ purpose: validatedFields.data.projectType, ambiance: validatedFields.data.projectField});
     return { themes: result.themes };
   } catch (e) {
     console.error(e);
-    return { error: "Failed to get theme suggestions. Please try again." };
+    return { error: "Failed to get project ideas. Please try again." };
   }
 }
 
 
-// Invitation Drafter
+// README Drafter
 const invitationSchema = z.object({
-  eventName: z.string().min(1, "Event name is required."),
-  date: z.string().min(1, "Date is required."),
-  time: z.string().min(1, "Time is required."),
-  location: z.string().min(1, "Location is required."),
-  theme: z.string().optional(),
-  purpose: z.string().optional(),
+  projectName: z.string().min(1, "Project name is required."),
+  projectDescription: z.string().min(1, "Project description is required."),
+  techStack: z.string().optional(),
   additionalInfo: z.string().optional(),
 });
 
@@ -58,20 +59,29 @@ export async function getInvitationDraft(prevState: InvitationState, formData: F
     }
 
     try {
-        const result = await draftInvitationWording(validatedFields.data);
+        // Note: AI flow is still for invitations, but we're passing README-related data.
+        const result = await draftInvitationWording({
+            eventName: validatedFields.data.projectName,
+            purpose: validatedFields.data.projectDescription,
+            theme: validatedFields.data.techStack,
+            additionalInfo: validatedFields.data.additionalInfo,
+            date: '',
+            time: '',
+            location: ''
+        });
         return { invitationWording: result.invitationWording };
     } catch (e) {
         console.error(e);
-        return { error: "Failed to draft invitation. Please try again." };
+        return { error: "Failed to draft README. Please try again." };
     }
 }
 
 
-// Game Recommender
+// Tech Stack Recommender
 const gameSchema = z.object({
-    theme: z.string().min(1, "Theme is required."),
-    ageRange: z.string().min(1, "Age range is required."),
-    numberOfGuests: z.coerce.number().min(1, "Number of guests must be at least 1."),
+    projectType: z.string().min(1, "Project type is required."),
+    experienceLevel: z.string().min(1, "Experience level is required."),
+    teamSize: z.coerce.number().min(1, "Team size must be at least 1."),
 });
 
 type GameRecommendation = { name: string; description: string };
@@ -87,10 +97,15 @@ export async function getGameRecommendations(prevState: GameState, formData: For
     }
 
     try {
-        const result = await recommendPartyGames(validatedFields.data);
+        // Note: AI flow is still for games, but we're passing tech stack related data.
+        const result = await recommendPartyGames({
+            theme: validatedFields.data.projectType,
+            ageRange: validatedFields.data.experienceLevel,
+            numberOfGuests: validatedFields.data.teamSize,
+        });
         return { recommendations: result.recommendations };
     } catch (e) {
         console.error(e);
-        return { error: "Failed to get game recommendations. Please try again." };
+        return { error: "Failed to get tech stack recommendations. Please try again." };
     }
 }

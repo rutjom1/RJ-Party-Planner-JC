@@ -2,27 +2,27 @@
   "placeholderImages": [
     {
       "id": "party-hero",
-      "description": "Colorful party decorations hanging from the ceiling.",
-      "imageUrl": "https://images.unsplash.com/photo-1630527933137-f6eb0fddbc47?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxwYXJ0eSUyMGRlY29yYXRpb25zfGVufDB8fHx8MTc3MTQyNjg5N3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "party decorations"
+      "description": "A futuristic network of glowing nodes and connections.",
+      "imageUrl": "https://images.unsplash.com/photo-1531297484001-80022131f5a1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0ZWNobm9sb2d5fGVufDB8fHx8MTcyMTA5MzE0MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "technology network"
     },
     {
       "id": "event-card-1",
-      "description": "A birthday cake with lit candles.",
-      "imageUrl": "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxiaXJ0aGRheSUyMGNha2V8ZW58MHx8fHwxNzcxMzQyMzM3fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "birthday cake"
+      "description": "A person typing on a laptop with code on the screen.",
+      "imageUrl": "https://images.unsplash.com/photo-1550439062-609e1531270e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjb2Rpbmd8ZW58MHx8fHwxNzIxMDkzMTg3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "coding laptop"
     },
     {
       "id": "event-card-2",
-      "description": "An elegant wedding reception table setting.",
-      "imageUrl": "https://images.unsplash.com/photo-1714972383523-7c636d2f0e9b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3ZWRkaW5nJTIwcmVjZXB0aW9ufGVufDB8fHx8MTc3MTM0MjA4OXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "wedding reception"
+      "description": "A server room with racks of hardware.",
+      "imageUrl": "https://images.unsplash.com/photo-1529429617124-95b109e86bb8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZXJ2ZXIlMjByb29tfGVufDB8fHx8MTcyMTA5MzIyOHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "server room"
     },
     {
       "id": "event-card-3",
-      "description": "People enjoying a casual garden party.",
-      "imageUrl": "https://images.unsplash.com/photo-1659123087151-f8a9bde5c9c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxnYXJkZW4lMjBwYXJ0eXxlbnwwfHx8fDE3NzE0MjY4OTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "garden party"
+      "description": "A glowing circuit board pattern.",
+      "imageUrl": "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjcFQlMjBjaXJjdWl0fGVufDB8fHx8MTcyMTA5MzI1N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "circuit board"
     },
     {
       "id": "avatar-1",

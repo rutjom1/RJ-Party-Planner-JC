@@ -1,26 +1,25 @@
 {
     "entities": {
-        "PartyEvent": {
-            "title": "Party Event",
-            "description": "Represents a party or event planned by a user.",
+        "TechProject": {
+            "title": "Tech Project",
+            "description": "Represents a tech project planned by a user.",
             "type": "object",
             "properties": {
                 "name": {
                     "type": "string"
                 },
-                "date": {
-                    "type": "string"
+                "startDate": {
+                    "type": "string",
+                    "format": "date"
                 },
-                "time": {
-                    "type": "string"
-                },
-                "location": {
-                    "type": "string"
+                "repoUrl": {
+                    "type": "string",
+                    "format": "uri"
                 },
                 "description": {
                     "type": "string"
                 },
-                "theme": {
+                "techStack": {
                     "type": "string"
                 },
                 "imageUrl": {
@@ -33,9 +32,8 @@
             },
             "required": [
                 "name",
-                "date",
-                "time",
-                "location",
+                "startDate",
+                "repoUrl",
                 "description",
                 "imageUrl",
                 "imageHint"
@@ -48,9 +46,9 @@
     "firestore": {
         "/events/{eventId}": {
             "schema": {
-                "$ref": "#/entities/PartyEvent"
+                "$ref": "#/entities/TechProject"
             },
-            "description": "Stores all party events."
+            "description": "Stores all tech projects."
         }
     }
 }

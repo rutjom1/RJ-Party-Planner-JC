@@ -15,7 +15,7 @@ function SubmitButton() {
   return (
     <Button type="submit" disabled={pending} className="w-full">
       {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Lightbulb className="mr-2 h-4 w-4" />}
-      Suggest Themes
+      Suggest Ideas
     </Button>
   );
 }
@@ -29,8 +29,8 @@ export function ThemeSuggester() {
     <div className="flex flex-col md:flex-row gap-6">
       <Card className="w-full md:w-1/3">
         <CardHeader>
-          <CardTitle>Describe Your Event</CardTitle>
-          <CardDescription>Tell us a bit about your party, and we'll suggest some themes.</CardDescription>
+          <CardTitle>Describe Your Project Idea</CardTitle>
+          <CardDescription>Tell us a bit about your project, and we'll suggest some ideas.</CardDescription>
         </CardHeader>
         <CardContent>
           <form action={formAction} className="space-y-4">
@@ -42,12 +42,12 @@ export function ThemeSuggester() {
               </Alert>
             )}
             <div className="space-y-2">
-              <Label htmlFor="purpose">Purpose of the event</Label>
-              <Input id="purpose" name="purpose" placeholder="e.g., Birthday, graduation" />
+              <Label htmlFor="projectType">Project Type</Label>
+              <Input id="projectType" name="projectType" placeholder="e.g., SaaS, Mobile App, Open Source Tool" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="ambiance">Desired ambiance</Label>
-              <Input id="ambiance" name="ambiance" placeholder="e.g., Lively, relaxed, elegant" />
+              <Label htmlFor="projectField">Field / Industry</Label>
+              <Input id="projectField" name="projectField" placeholder="e.g., Fintech, Healthcare, Developer Tools" />
             </div>
             <SubmitButton />
           </form>
@@ -55,8 +55,8 @@ export function ThemeSuggester() {
       </Card>
 
       <AIOutput
-        title="Suggested Themes"
-        description="Here are some creative ideas for your party."
+        title="Suggested Project Ideas"
+        description="Here are some creative ideas for your next project."
         isLoading={pending}
         hasRun={!!state.themes && state.themes.length > 0 || !!state.error}
         output={

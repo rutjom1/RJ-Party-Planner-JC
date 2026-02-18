@@ -2,7 +2,7 @@
 import { useFirestore, useCollection } from "@/firebase";
 import { collection, query } from "firebase/firestore";
 import { EventCard } from "@/components/events/event-card";
-import { PartyEvent } from "@/lib/types";
+import { Project } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -27,13 +27,13 @@ export default function DashboardPage() {
         if (!firestore) return null;
         return query(collection(firestore, "events"));
     }, [firestore]);
-    const { data: events, loading } = useCollection<PartyEvent>(eventsQuery);
+    const { data: projects, loading } = useCollection<Project>(eventsQuery);
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight font-headline">Welcome to your Dashboard</h1>
-        <p className="text-muted-foreground">Here are your upcoming parties and events.</p>
+        <p className="text-muted-foreground">Here are your ongoing projects.</p>
       </div>
 
       {loading && (
@@ -44,20 +44,20 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {!loading && events && events.length > 0 && (
+      {!loading && projects && projects.length > 0 && (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {events.map(event => (
-            <EventCard key={event.id} event={event} />
+            {projects.map(project => (
+            <EventCard key={project.id} event={project} />
             ))}
         </div>
       )}
 
-      {!loading && (!events || events.length === 0) && (
+      {!loading && (!projects || projects.length === 0) && (
         <div className="text-center py-12">
-            <h3 className="text-2xl font-semibold">No Events Yet</h3>
-            <p className="text-muted-foreground mt-2">You haven't created any events. Let's plan your first party!</p>
+            <h3 className="text-2xl font-semibold">No Projects Yet</h3>
+            <p className="text-muted-foreground mt-2">You haven't created any projects. Let's create your first one!</p>
             <Button asChild className="mt-4">
-                <Link href="/events/create">Create New Event</Link>
+                <Link href="/events/create">Create New Project</Link>
             </Button>
         </div>
       )}

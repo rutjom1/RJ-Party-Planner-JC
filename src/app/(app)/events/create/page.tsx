@@ -5,8 +5,8 @@ export default function CreateEventPage() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle className="text-4xl font-headline">Create a New Event</CardTitle>
-                <CardDescription>This is where the magic begins. Plan your next unforgettable event.</CardDescription>
+                <CardTitle className="text-4xl font-headline">Create a New Project</CardTitle>
+                <CardDescription>This is where your next big idea begins. Plan your new tech project.</CardDescription>
             </CardHeader>
             <CardContent>
                 <EventForm />

@@ -1,16 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
-import type { PartyEvent } from "@/lib/types";
+import type { Project } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Calendar } from "lucide-react";
 
 type EventCardProps = {
-  event: PartyEvent;
+  event: Project;
 };
 
 export function EventCard({ event }: EventCardProps) {
-  const eventDate = new Date(event.date.replace(/-/g, '/'));
+  const eventDate = new Date(event.startDate.replace(/-/g, '/'));
 
   return (
     <Card className="flex flex-col">

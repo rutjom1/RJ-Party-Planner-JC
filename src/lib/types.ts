@@ -1,11 +1,10 @@
-export type PartyEvent = {
+export type Project = {
   id: string;
   name: string;
-  date: string;
-  time: string;
-  location: string;
+  startDate: string;
+  repoUrl: string;
   description: string;
-  theme?: string;
+  techStack?: string;
   imageUrl: string;
   imageHint: string;
   [key: string]: any;
