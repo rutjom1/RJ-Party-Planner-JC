@@ -6,6 +6,7 @@ import { PartyEvent } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useMemo } from "react";
 
 function EventSkeleton() {
     return (
@@ -22,7 +23,10 @@ function EventSkeleton() {
 export default function DashboardPage() {
     const firestore = useFirestore();
     
-    const eventsQuery = firestore ? query(collection(firestore, "events")) : null;
+    const eventsQuery = useMemo(() => {
+        if (!firestore) return null;
+        return query(collection(firestore, "events"));
+    }, [firestore]);
     const { data: events, loading } = useCollection<PartyEvent>(eventsQuery);
 
   return (

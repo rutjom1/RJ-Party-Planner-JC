@@ -5,10 +5,14 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Calendar, Clock, MapPin, Loader2 } from "lucide-react";
 import { doc } from "firebase/firestore";
 import { PartyEvent } from "@/lib/types";
+import { useMemo } from "react";
 
 export default function EventDetailPage({ params }: { params: { id: string } }) {
   const firestore = useFirestore();
-  const eventRef = firestore ? doc(firestore, "events", params.id) : null;
+  const eventRef = useMemo(() => {
+    if (!firestore) return null;
+    return doc(firestore, "events", params.id);
+  }, [firestore, params.id]);
   const { data: event, loading } = useDoc<PartyEvent>(eventRef);
 
   if (loading) {
@@ -23,7 +27,7 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
     notFound();
   }
 
-  const eventDate = new Date(event.date);
+  const eventDate = new Date(event.date.replace(/-/g, '/'));
 
   return (
     <div className="space-y-6">

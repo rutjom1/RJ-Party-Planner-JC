@@ -10,7 +10,7 @@ type EventCardProps = {
 };
 
 export function EventCard({ event }: EventCardProps) {
-  const eventDate = new Date(event.date);
+  const eventDate = new Date(event.date.replace(/-/g, '/'));
 
   return (
     <Card className="flex flex-col">
