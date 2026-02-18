@@ -1,6 +1,6 @@
 'use client';
 import { useDoc, useFirestore } from "@/firebase";
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Calendar, Link as LinkIcon, Loader2 } from "lucide-react";
 import { doc } from "firebase/firestore";
@@ -9,9 +9,11 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export default function EventDetailPage({ params }: { params: { id: string } }) {
+export default function EventDetailPage() {
   const firestore = useFirestore();
-  const { id } = params;
+  const params = useParams();
+  const id = params.id as string;
+  
   const eventRef = useMemo(() => {
     if (!firestore) return null;
     return doc(firestore, "events", id);
