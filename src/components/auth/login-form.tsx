@@ -54,18 +54,9 @@ export function LoginForm() {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       router.push('/dashboard');
     } catch (e: any) {
-      // Handle Firebase Auth errors
-      switch (e.code) {
-        case 'auth/user-not-found':
-        case 'auth/wrong-password':
-        case 'auth/invalid-credential':
-          setError("Invalid email or password. Please try again.");
-          break;
-        default:
-          setError(e.message || "An unexpected error occurred. Please try again later.");
-          console.error("Login Error:", e);
-          break;
-      }
+      const errorMessage = e.code ? e.code : e.message || "An unexpected error occurred. Please try again later.";
+      setError(errorMessage);
+      console.error("Login Error:", e);
     } finally {
       setIsSubmitting(false);
     }
