@@ -10,7 +10,7 @@ type EventCardProps = {
 };
 
 export function EventCard({ event }: EventCardProps) {
-  const eventDate = new Date(event.startDate.replace(/-/g, '/'));
+  const eventDate = event.startDate ? new Date(event.startDate.replace(/-/g, '/')) : null;
 
   return (
     <Card className="flex flex-col">
@@ -26,10 +26,12 @@ export function EventCard({ event }: EventCardProps) {
       </CardHeader>
       <CardContent className="p-4 flex flex-col flex-1">
         <CardTitle className="text-xl font-headline mb-2">{event.name}</CardTitle>
-        <div className="flex items-center text-sm text-muted-foreground mb-4">
-          <Calendar className="mr-2 h-4 w-4" />
-          <span>{eventDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-        </div>
+        {eventDate && (
+          <div className="flex items-center text-sm text-muted-foreground mb-4">
+            <Calendar className="mr-2 h-4 w-4" />
+            <span>{eventDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+          </div>
+        )}
         <div className="flex-grow" />
         <Button asChild className="mt-auto">
           <Link href={`/events/${event.id}`}>
