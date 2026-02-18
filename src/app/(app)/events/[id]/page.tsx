@@ -32,7 +32,7 @@ export default function EventDetailPage() {
     notFound();
   }
 
-  const projectDate = new Date(project.startDate.replace(/-/g, '/'));
+  const projectDate = project.startDate ? new Date(project.startDate.replace(/-/g, '/')) : null;
 
   return (
     <div className="space-y-6">
@@ -42,20 +42,26 @@ export default function EventDetailPage() {
           <CardDescription className="text-lg">{project.description}</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-3">
-          <div className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-muted-foreground" />
-            <span className="text-foreground">{projectDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <LinkIcon className="h-5 w-5 text-muted-foreground" />
-            <Button variant="link" asChild className="p-0 h-auto">
-              <Link href={project.repoUrl} target="_blank" rel="noopener noreferrer">{project.repoUrl}</Link>
-            </Button>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">Stack:</span>
-            <span className="text-foreground">{project.techStack}</span>
-          </div>
+          {projectDate && (
+            <div className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-muted-foreground" />
+              <span className="text-foreground">{projectDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            </div>
+          )}
+          {project.repoUrl && (
+            <div className="flex items-center gap-2">
+              <LinkIcon className="h-5 w-5 text-muted-foreground" />
+              <Button variant="link" asChild className="p-0 h-auto">
+                <Link href={project.repoUrl} target="_blank" rel="noopener noreferrer">{project.repoUrl}</Link>
+              </Button>
+            </div>
+          )}
+          {project.techStack && (
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">Stack:</span>
+              <span className="text-foreground">{project.techStack}</span>
+            </div>
+          )}
         </CardContent>
       </Card>
       <Card>
